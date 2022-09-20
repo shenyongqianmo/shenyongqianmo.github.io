@@ -1,0 +1,73 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="author" content="深拥浅沫"><title> · Hexo</title><meta name="description" content="Redis Hash介绍Redis hash 是一个 键值对集合 。
+Redis hash 是一个 string 类型的 field 和 value 的映射表，hash特别适合用于存储对象。
+类似Java里面的 Map&amp;lt;String,Object&amp;gt;
+&amp;#x3D;&amp;#x3D;示例：&amp;#x3"><meta name="keywords" content="Blog,博客,Hexo"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="renderer" content="webkit"><link rel="shortcut icon" type="image/x-icon" href="/images/fromhere.png"><link rel="stylesheet" href="/shenyongqianmo/shenyongqianmo.github.io/projects/css/style.css"><link rel="stylesheet" href="/shenyongqianmo/shenyongqianmo.github.io/projects/css/blog_basic.css"><link rel="stylesheet" href="/shenyongqianmo/shenyongqianmo.github.io/projects/css/font-awesome.min.css"><link rel="stylesheet" href="/shenyongqianmo/shenyongqianmo.github.io/projects/css/insight.css"><link rel="stylesheet" href="/shenyongqianmo/shenyongqianmo.github.io/projects/css/search.css"><link rel="alternate" type="application/atom+xml" title="ATOM 1.0" href="/atom.xml"><script src="/shenyongqianmo/shenyongqianmo.github.io/projects/js/jquery.js"></script><meta name="generator" content="Hexo 6.3.0"></head><body><div class="page-top animated fadeInDown"><div class="nav"><li> <a href="/">Home</a></li><li> <a href="/archives">Archives</a></li><li> <a href="/tags">Tags</a></li><li> <a href="/about">About</a></li><li> <a href="/links">Links</a></li></div><div class="information"><div class="nav_right_btn"><li><a class="fa fa-chevron-left" onclick="window.history.go(-1)"> </a></li><li><a class="fa fa-search" onclick="openWindow();"></a></li></div><div class="avatar"><img src="/images/fromhere.png"></div></div></div><div class="sidebar animated fadeInDown"><div class="sidebar-top"><div class="logo-title"><div class="title"><img src="/shenyongqianmo/shenyongqianmo.github.io/projects/images/logo@2x.webp" style="width:220px;" alt="favicon"><h3 title=""><a href="/">Hexo</a></h3><div class="description"><p>Welcome ~</p></div></div><ul class="social-links"><li><a href="https://github.com/shenyongqianmo"><i class="fa fa-github"></i></a></li><li><a href="mailto:euroa@foxmail.com"><i class="fa fa-envelope"></i></a></li><li><a target="_blank" rel="noopener" href="http://sighttp.qq.com/authd?IDKEY=3217468175"><i class="fa fa-qq"></i></a></li><li><a target="_blank" rel="noopener" href="https://www.zhihu.com/people/shen-yong-qian-mo"><i class="fa fa-mortar-board"></i></a></li></ul></div></div><div class="footer"><div class="p"> <span> © </span><i class="fa fa-star"></i><span> 深拥浅沫</span></div><div class="by_farbox"><span>Powered by </span><a href="https://hexo.io/zh-cn/" target="_blank">Hexo </a><span> & </span><span>Anatolo </span></div><div class="beian"></div></div></div><div class="main"><div class="autopagerize_page_element"><div class="content"><div class="post-page"><div class="post animated fadeInDown"><div class="post-title"><h3><a></a></h3></div><div class="post-content"><p><h1 id="Redis-Hash"><a href="#Redis-Hash" class="headerlink" title="Redis Hash"></a>Redis Hash</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>Redis hash 是一个 <font color=red>键值对集合</font> 。</p>
+<p>Redis hash 是一个 string 类型的 field 和 value 的映射表，hash特别适合用于存储对象。</p>
+<p>类似Java里面的 Map&lt;String,Object&gt;</p>
+<p>&#x3D;&#x3D;示例：&#x3D;&#x3D;</p>
+<p>用户ID为查找的key，存储的value用户对象包含姓名，年龄，生日等信息，如果用普通的key&#x2F;value结构来存储</p>
+<p>主要有以下2种存储方式：</p>
+<p><img src="D:\Java\Redis笔记\image-20220421174013707.png" alt="image-20220421174013707"></p>
+<hr>
+<h2 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h2><blockquote>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>hset [key] [filed] [value]</td>
+<td>给key集合中的 field 赋值 value</td>
+</tr>
+<tr>
+<td>hget [key] [field]</td>
+<td>获得key集合中的 field 的值</td>
+</tr>
+<tr>
+<td>hmset [key] [field1] [value1] [field2] [value2] …</td>
+<td>批量设置 filed 的 value</td>
+</tr>
+<tr>
+<td>hmget [key] [field1] [field2] …</td>
+<td>批量获取 field 的 value（此操作不是原子性的，不会因为其中一个field获取不到就返回错误，获取不到会为该值返回 nil）</td>
+</tr>
+<tr>
+<td>hexists [key] [field]</td>
+<td>查看哈希表key中，filed 是否存在（存在返回1，不存在返回0）</td>
+</tr>
+<tr>
+<td>hkeys [key]</td>
+<td>列出该哈希表中所有的 field</td>
+</tr>
+<tr>
+<td>hvals [key]</td>
+<td>列出该hash集合中的所有 value</td>
+</tr>
+<tr>
+<td>hgetall [key]</td>
+<td>获取该哈希表中所有的 field 和 value</td>
+</tr>
+<tr>
+<td>hlen [key]</td>
+<td>获取哈希表中字段的数量</td>
+</tr>
+<tr>
+<td>hincrby [key] [field] increment(可选，默认为1)</td>
+<td>为哈希表中某一 field 的 value 进行 +increment（返回加后的结果）</td>
+</tr>
+<tr>
+<td>hsetnx [key] [field] [value]</td>
+<td>当切仅当 field 不存在时，设置其值为 value（不成功返回0，成功返回1）</td>
+</tr>
+</tbody></table>
+</blockquote>
+<hr>
+<h2 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h2><p>Hash类型对应的数据结构是两种：</p>
+<ol>
+<li>ziplist（压缩列表）</li>
+<li>hashtable（哈希表）</li>
+</ol>
+<p>当field-value长度较短且个数较少时，使用ziplist，否则使用hashtable</p>
+</p><div class="tip">转载请注明出处 ~<br>Author: 深拥浅沫</div></div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2022-09-15</span><span class="leancloud_visitors"></span><span>About 424 words, 1 min 24 sec  read</span></div></div></div></div><div class="share"><div class="evernote"><a class="fa fa-bookmark" href="" onclick="javascript:join_favorite()" ref="sidebar"></a></div><div class="weibo"><a class="fa fa-weibo" href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&amp;title=',e(d.title),'&amp;appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));"></a></div><div class="twitter"><a class="fa fa-twitter" target="_blank" rel="noopener" href="http://twitter.com/home?status=,https://github.com/shenyongqianmo/shenyongqianmo.github.io/projects/2022/09/15/Redis笔记/基础/哈希Hash/,Hexo,,;"></a></div></div><div class="pagination"><ul class="clearfix"><li class="pre pagbuttons"><a class="btn" role="navigation" href="/shenyongqianmo/shenyongqianmo.github.io/projects/2022/09/15/Redis%E7%AC%94%E8%AE%B0/%E5%9F%BA%E7%A1%80/%E6%96%B0%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%20Bitmaps/" title="">Previous</a></li><li class="next pagbuttons"><a class="btn" role="navigation" href="/shenyongqianmo/shenyongqianmo.github.io/projects/2022/09/15/Redis%E7%AC%94%E8%AE%B0/%E5%9F%BA%E7%A1%80/%E6%9C%89%E5%BA%8F%E9%9B%86%E5%90%88Sorted%20Set/" title="">Next</a></li></ul></div><script src="/shenyongqianmo/shenyongqianmo.github.io/projects/js/visitors.js"></script></div></div></div></div><script src="/shenyongqianmo/shenyongqianmo.github.io/projects/js/jquery-migrate-1.2.1.min.js"></script><script src="/shenyongqianmo/shenyongqianmo.github.io/projects/js/jquery.appear.js"></script><script src="/shenyongqianmo/shenyongqianmo.github.io/projects/js/add-bookmark.js"></script><script>(function(window){var INSIGHT_CONFIG={TRANSLATION:{POSTS:"Posts",PAGES:"Pages",CATEGORIES:"Categories",TAGS:"Tags",UNTITLED:"(Untitled)",},CONTENT_URL:"/shenyongqianmo/shenyongqianmo.github.io/projects/content.json",};window.INSIGHT_CONFIG=INSIGHT_CONFIG})(window);</script><script src="/shenyongqianmo/shenyongqianmo.github.io/projects/js/insight.js" defer></script><div class="searchbox ins-search"><div class="searchbox-container ins-search-container"><div class="searchbox-input-wrapper"><input class="searchbox-input ins-search-input" type="text" placeholder="Search..."><span class="searchbox-close"><a class="fa fa-times-circle" onclick="closeWindow();"></a></span></div><div class="searchbox-result-wrapper ins-section-wrapper"><div class="ins-section-container"><p>Seraching...</p></div></div></div></div></body></html>

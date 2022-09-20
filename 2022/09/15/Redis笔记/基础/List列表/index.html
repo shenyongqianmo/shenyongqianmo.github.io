@@ -1,0 +1,44 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="author" content="深拥浅沫"><title> · Hexo</title><meta name="description" content="Redis List简介
+Redis List是简单的字符串列表，按照插入顺序排序。你可以添加一个元素到列表的头部或者尾部
+它的底层实际是个 双向链表 ，对两端的操作性能很高，通过索引下标的操作中间的节点性能会比较差
+
+
+
+常用命令
+
+ lpush &amp;#x2F; rpush [key] [value"><meta name="keywords" content="Blog,博客,Hexo"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="renderer" content="webkit"><link rel="shortcut icon" type="image/x-icon" href="/images/fromhere.png"><link rel="stylesheet" href="/shenyongqianmo/shenyongqianmo.github.io/projects/css/style.css"><link rel="stylesheet" href="/shenyongqianmo/shenyongqianmo.github.io/projects/css/blog_basic.css"><link rel="stylesheet" href="/shenyongqianmo/shenyongqianmo.github.io/projects/css/font-awesome.min.css"><link rel="stylesheet" href="/shenyongqianmo/shenyongqianmo.github.io/projects/css/insight.css"><link rel="stylesheet" href="/shenyongqianmo/shenyongqianmo.github.io/projects/css/search.css"><link rel="alternate" type="application/atom+xml" title="ATOM 1.0" href="/atom.xml"><script src="/shenyongqianmo/shenyongqianmo.github.io/projects/js/jquery.js"></script><meta name="generator" content="Hexo 6.3.0"></head><body><div class="page-top animated fadeInDown"><div class="nav"><li> <a href="/">Home</a></li><li> <a href="/archives">Archives</a></li><li> <a href="/tags">Tags</a></li><li> <a href="/about">About</a></li><li> <a href="/links">Links</a></li></div><div class="information"><div class="nav_right_btn"><li><a class="fa fa-chevron-left" onclick="window.history.go(-1)"> </a></li><li><a class="fa fa-search" onclick="openWindow();"></a></li></div><div class="avatar"><img src="/images/fromhere.png"></div></div></div><div class="sidebar animated fadeInDown"><div class="sidebar-top"><div class="logo-title"><div class="title"><img src="/shenyongqianmo/shenyongqianmo.github.io/projects/images/logo@2x.webp" style="width:220px;" alt="favicon"><h3 title=""><a href="/">Hexo</a></h3><div class="description"><p>Welcome ~</p></div></div><ul class="social-links"><li><a href="https://github.com/shenyongqianmo"><i class="fa fa-github"></i></a></li><li><a href="mailto:euroa@foxmail.com"><i class="fa fa-envelope"></i></a></li><li><a target="_blank" rel="noopener" href="http://sighttp.qq.com/authd?IDKEY=3217468175"><i class="fa fa-qq"></i></a></li><li><a target="_blank" rel="noopener" href="https://www.zhihu.com/people/shen-yong-qian-mo"><i class="fa fa-mortar-board"></i></a></li></ul></div></div><div class="footer"><div class="p"> <span> © </span><i class="fa fa-star"></i><span> 深拥浅沫</span></div><div class="by_farbox"><span>Powered by </span><a href="https://hexo.io/zh-cn/" target="_blank">Hexo </a><span> & </span><span>Anatolo </span></div><div class="beian"></div></div></div><div class="main"><div class="autopagerize_page_element"><div class="content"><div class="post-page"><div class="post animated fadeInDown"><div class="post-title"><h3><a></a></h3></div><div class="post-content"><p><h1 id="Redis-List"><a href="#Redis-List" class="headerlink" title="Redis List"></a>Redis List</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><ol>
+<li>Redis List是简单的字符串列表，按照插入顺序排序。你可以添加一个元素到列表的头部或者尾部</li>
+<li>它的底层实际是个 <font color=red>双向链表</font> ，对两端的操作性能很高，通过索引下标的操作中间的节点性能会比较差</li>
+</ol>
+<p><img src="D:\Java\Redis笔记\image-20220417151001034.png" alt="image-20220417151001034"></p>
+<hr>
+<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><blockquote>
+<ul>
+<li><input disabled="" type="checkbox"> lpush &#x2F; rpush [key] [value1] [value2] [value3] …  从左边 &#x2F; 右边插入一个或多个值</li>
+<li><input disabled="" type="checkbox"> lpop  &#x2F; rpop [key]  从左边 &#x2F; 右边吐出一个值（吐出以后，值就从该列表消失了）</li>
+<li><input disabled="" type="checkbox"> rpoplpush [sourceList] [destination]  从sourceList中右推出一个值，然后左push到destination中</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li><input disabled="" type="checkbox"> lrange [list] [start] [end]  按照索引下标访问指定的值（-1表示右边第一个，从0到-1表示访问所有值）</li>
+<li><input disabled="" type="checkbox"> lindex [list] [index]  访问指定下标的值</li>
+<li><input disabled="" type="checkbox"> llen [list]  获得列表长度</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li><input disabled="" type="checkbox"> linset [list] before &#x2F; after [value] [newvalue]  在value值的前面 &#x2F; 后面插入一个newvalue</li>
+<li><input disabled="" type="checkbox"> lrem [list] [number] [value]  从左边开始，删除number个值为[value]的元素</li>
+<li><input disabled="" type="checkbox"> lset [list] [index] [value]  将列表指定索引的值进行替换</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="Redis-List-数据结构"><a href="#Redis-List-数据结构" class="headerlink" title="Redis List 数据结构"></a>Redis List 数据结构</h2><p>List的数据结构是 <font color=red>快速链表 quickList </font></p>
+<p>首先，列表元素较少的情况下会使用一块连续的内存，这个结构是 <strong>ziplist</strong> ，即：压缩列表</p>
+<p>它将所有的元素紧挨着一起存储，分配的是一块连续的内存，当数据量比较多的时候才会改成 <font color=red>quickList</font></p>
+<p>当数据量比较大的时候才会改成 <font color=red>quickList</font></p>
+<p>因为普通的链表需要的附加指针空间太大，会比较浪费空间。比如这个列表里存的只是int类型的数据，结构上还需要两个额外的指针 prev 和 next </p>
+<p><img src="D:\Java\Redis笔记\image-20220417162148949.png" alt="image-20220417162148949"></p>
+<p>Redis 将链表和 ziplist 结合起来组成了 quicklist ，也就是将多个 ziplist 使用双向指针串起来使用。这样既满足了快速的插入删除性能，又不会出现太大的空间冗余</p>
+</p><div class="tip">转载请注明出处 ~<br>Author: 深拥浅沫</div></div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2022-09-15</span><span class="leancloud_visitors"></span><span>About 518 words, 1 min 43 sec  read</span></div></div></div></div><div class="share"><div class="evernote"><a class="fa fa-bookmark" href="" onclick="javascript:join_favorite()" ref="sidebar"></a></div><div class="weibo"><a class="fa fa-weibo" href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&amp;title=',e(d.title),'&amp;appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));"></a></div><div class="twitter"><a class="fa fa-twitter" target="_blank" rel="noopener" href="http://twitter.com/home?status=,https://github.com/shenyongqianmo/shenyongqianmo.github.io/projects/2022/09/15/Redis笔记/基础/List列表/,Hexo,,;"></a></div></div><div class="pagination"><ul class="clearfix"><li class="pre pagbuttons"><a class="btn" role="navigation" href="/shenyongqianmo/shenyongqianmo.github.io/projects/2022/09/15/Redis%E7%AC%94%E8%AE%B0/%E5%9F%BA%E7%A1%80/key%E9%94%AE%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/" title="">Previous</a></li><li class="next pagbuttons"><a class="btn" role="navigation" href="/shenyongqianmo/shenyongqianmo.github.io/projects/2022/09/15/Redis%E7%AC%94%E8%AE%B0/%E5%9F%BA%E7%A1%80/%E5%AD%97%E7%AC%A6%E4%B8%B2String/" title="">Next</a></li></ul></div><script src="/shenyongqianmo/shenyongqianmo.github.io/projects/js/visitors.js"></script></div></div></div></div><script src="/shenyongqianmo/shenyongqianmo.github.io/projects/js/jquery-migrate-1.2.1.min.js"></script><script src="/shenyongqianmo/shenyongqianmo.github.io/projects/js/jquery.appear.js"></script><script src="/shenyongqianmo/shenyongqianmo.github.io/projects/js/add-bookmark.js"></script><script>(function(window){var INSIGHT_CONFIG={TRANSLATION:{POSTS:"Posts",PAGES:"Pages",CATEGORIES:"Categories",TAGS:"Tags",UNTITLED:"(Untitled)",},CONTENT_URL:"/shenyongqianmo/shenyongqianmo.github.io/projects/content.json",};window.INSIGHT_CONFIG=INSIGHT_CONFIG})(window);</script><script src="/shenyongqianmo/shenyongqianmo.github.io/projects/js/insight.js" defer></script><div class="searchbox ins-search"><div class="searchbox-container ins-search-container"><div class="searchbox-input-wrapper"><input class="searchbox-input ins-search-input" type="text" placeholder="Search..."><span class="searchbox-close"><a class="fa fa-times-circle" onclick="closeWindow();"></a></span></div><div class="searchbox-result-wrapper ins-section-wrapper"><div class="ins-section-container"><p>Seraching...</p></div></div></div></div></body></html>

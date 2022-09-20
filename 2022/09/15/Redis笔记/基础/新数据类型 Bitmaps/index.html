@@ -1,0 +1,103 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="author" content="深拥浅沫"><title> · Hexo</title><meta name="description" content="Redis Bitmaps介绍现代计算机用二进制（位） 作为信息的基础单位， 1个字节等于8位， 例如“abc”字符串是由3个字节组成， 但实际在计算机存储时将其用二进制表示， “abc”分别对应的ASCII码分别是97、 98、 99， 对应的二进制分别是01100001、 01100010和01"><meta name="keywords" content="Blog,博客,Hexo"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="renderer" content="webkit"><link rel="shortcut icon" type="image/x-icon" href="/images/fromhere.png"><link rel="stylesheet" href="/shenyongqianmo/shenyongqianmo.github.io/projects/css/style.css"><link rel="stylesheet" href="/shenyongqianmo/shenyongqianmo.github.io/projects/css/blog_basic.css"><link rel="stylesheet" href="/shenyongqianmo/shenyongqianmo.github.io/projects/css/font-awesome.min.css"><link rel="stylesheet" href="/shenyongqianmo/shenyongqianmo.github.io/projects/css/insight.css"><link rel="stylesheet" href="/shenyongqianmo/shenyongqianmo.github.io/projects/css/search.css"><link rel="alternate" type="application/atom+xml" title="ATOM 1.0" href="/atom.xml"><script src="/shenyongqianmo/shenyongqianmo.github.io/projects/js/jquery.js"></script><meta name="generator" content="Hexo 6.3.0"></head><body><div class="page-top animated fadeInDown"><div class="nav"><li> <a href="/">Home</a></li><li> <a href="/archives">Archives</a></li><li> <a href="/tags">Tags</a></li><li> <a href="/about">About</a></li><li> <a href="/links">Links</a></li></div><div class="information"><div class="nav_right_btn"><li><a class="fa fa-chevron-left" onclick="window.history.go(-1)"> </a></li><li><a class="fa fa-search" onclick="openWindow();"></a></li></div><div class="avatar"><img src="/images/fromhere.png"></div></div></div><div class="sidebar animated fadeInDown"><div class="sidebar-top"><div class="logo-title"><div class="title"><img src="/shenyongqianmo/shenyongqianmo.github.io/projects/images/logo@2x.webp" style="width:220px;" alt="favicon"><h3 title=""><a href="/">Hexo</a></h3><div class="description"><p>Welcome ~</p></div></div><ul class="social-links"><li><a href="https://github.com/shenyongqianmo"><i class="fa fa-github"></i></a></li><li><a href="mailto:euroa@foxmail.com"><i class="fa fa-envelope"></i></a></li><li><a target="_blank" rel="noopener" href="http://sighttp.qq.com/authd?IDKEY=3217468175"><i class="fa fa-qq"></i></a></li><li><a target="_blank" rel="noopener" href="https://www.zhihu.com/people/shen-yong-qian-mo"><i class="fa fa-mortar-board"></i></a></li></ul></div></div><div class="footer"><div class="p"> <span> © </span><i class="fa fa-star"></i><span> 深拥浅沫</span></div><div class="by_farbox"><span>Powered by </span><a href="https://hexo.io/zh-cn/" target="_blank">Hexo </a><span> & </span><span>Anatolo </span></div><div class="beian"></div></div></div><div class="main"><div class="autopagerize_page_element"><div class="content"><div class="post-page"><div class="post animated fadeInDown"><div class="post-title"><h3><a></a></h3></div><div class="post-content"><p><h1 id="Redis-Bitmaps"><a href="#Redis-Bitmaps" class="headerlink" title="Redis Bitmaps"></a>Redis Bitmaps</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>现代计算机用二进制（位） 作为信息的基础单位， 1个字节等于8位， 例如“abc”字符串是由3个字节组成， 但实际在计算机存储时将其用二进制表示， “abc”分别对应的ASCII码分别是97、 98、 99， 对应的二进制分别是01100001、 01100010和01100011，如下图</p>
+<p><img src="D:\Java\Redis笔记\image-20220424110536294.png" alt="image-20220424110536294"></p>
+<p>合理地使用操作位能够有效地提高内存使用率和开发效率。</p>
+<p>（1）Bitmaps本身不是一种数据类型， 实际上它就是字符串（key-value） ， 但是它可以对字符串的位进行操作。</p>
+<p>（2）Bitmaps单独提供了一套命令， 所以在Redis中使用Bitmaps和使用字符串的方法不太相同。 可以把Bitmaps想象成一个以位为单位的数组， 数组的每个单元只能存储0和1， 数组的下标在Bitmaps中叫做偏移量。</p>
+<img src="D:\Java\Redis笔记\image-20220424110558230.png" alt="image-20220424110558230" style="zoom:150%;" />
+
+<hr>
+<h2 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h2><blockquote>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>setbit [key] [offset] [value]</td>
+<td>设置Bitmaps中某个位置的值</td>
+</tr>
+<tr>
+<td>getbit [key] [offset]</td>
+<td>获取Bitmaps中某个位置的值</td>
+</tr>
+<tr>
+<td>bitcount [key] [start] [end]</td>
+<td>统计字符串被设置为1的bit数，一般情况下，给定的整个字符串都会被进行计数，通过指定额外的 start 或 end 参数，可以让计数只在特定的范围内进行</td>
+</tr>
+<tr>
+<td>bitop [and&#x2F;or&#x2F;not&#x2F;xor] [newkey] [key…]</td>
+<td>bitop是一个复合操作， 它可以做多个Bitmaps的and（交集） 、 or（并集） 、 not（非） 、 xor（异或） 操作并将结果保存在destkey中</td>
+</tr>
+</tbody></table>
+</blockquote>
+<hr>
+<h2 id="Bitmaps和set对比"><a href="#Bitmaps和set对比" class="headerlink" title="Bitmaps和set对比"></a>Bitmaps和set对比</h2><p><font color=gray>假设网站有1亿用户， 每天独立访问的用户有5千万， 如果每天用集合类型和Bitmaps分别存储活跃用户可以得到表</font></p>
+<h3 id="set和Bitmaps存储一天活跃用户对比-lt"><a href="#set和Bitmaps存储一天活跃用户对比-lt" class="headerlink" title="set和Bitmaps存储一天活跃用户对比&lt;"></a>set和Bitmaps存储一天活跃用户对比&lt;</h3><table>
+<thead>
+<tr>
+<th>数据类型</th>
+<th>每个用户id占用空间</th>
+<th>需要存储的用户量</th>
+<th>全部内存量</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>集合类型</td>
+<td>64位</td>
+<td>50000000</td>
+<td>64位*50000000 &#x3D; 400MB</td>
+</tr>
+<tr>
+<td>Bitmaps</td>
+<td>1位</td>
+<td>100000000</td>
+<td>1位*100000000 &#x3D; 12.5MB</td>
+</tr>
+</tbody></table>
+<p><font color=gray>很明显， 这种情况下使用Bitmaps能节省很多的内存空间， 尤其是随着时间推移节省的内存还是非常可观的</font></p>
+<h3 id="set和Bitmaps存储独立用户空间对比"><a href="#set和Bitmaps存储独立用户空间对比" class="headerlink" title="set和Bitmaps存储独立用户空间对比"></a>set和Bitmaps存储独立用户空间对比</h3><table>
+<thead>
+<tr>
+<th align="center">数据类型</th>
+<th align="center">一天</th>
+<th align="center">一个月</th>
+<th align="center">一年</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">集合类型</td>
+<td align="center">400MB</td>
+<td align="center">12GB</td>
+<td align="center">144GB</td>
+</tr>
+<tr>
+<td align="center">Bitmaps</td>
+<td align="center">12.5MB</td>
+<td align="center">375MB</td>
+<td align="center">4.5GB</td>
+</tr>
+</tbody></table>
+<hr>
+<p><font color=gray>但Bitmaps并不是万金油， 假如该网站每天的独立访问用户很少， 例如只有10万（大量的僵尸用户） ， 那么两者的对比如下表所示， 很显然， 这时候使用Bitmaps就不太合适了， 因为基本上大部分位都是0</font></p>
+<h3 id="set和Bitmaps存储一天活跃用户对比（独立用户比较少）"><a href="#set和Bitmaps存储一天活跃用户对比（独立用户比较少）" class="headerlink" title="set和Bitmaps存储一天活跃用户对比（独立用户比较少）"></a>set和Bitmaps存储一天活跃用户对比（独立用户比较少）</h3><table>
+<thead>
+<tr>
+<th align="center">数据类型</th>
+<th align="center">需要存储的用户量</th>
+<th align="center">全部内存量</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">集合类型</td>
+<td align="center">100000</td>
+<td align="center">64位*100000 &#x3D; 800KB</td>
+</tr>
+<tr>
+<td align="center">Bitmaps</td>
+<td align="center">100000000</td>
+<td align="center">1位*100000000 &#x3D; 12.5MB</td>
+</tr>
+</tbody></table>
+</p><div class="tip">转载请注明出处 ~<br>Author: 深拥浅沫</div></div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2022-09-15</span><span class="leancloud_visitors"></span><span>About 732 words, 2 min 26 sec  read</span></div></div></div></div><div class="share"><div class="evernote"><a class="fa fa-bookmark" href="" onclick="javascript:join_favorite()" ref="sidebar"></a></div><div class="weibo"><a class="fa fa-weibo" href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&amp;title=',e(d.title),'&amp;appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));"></a></div><div class="twitter"><a class="fa fa-twitter" target="_blank" rel="noopener" href="http://twitter.com/home?status=,https://github.com/shenyongqianmo/shenyongqianmo.github.io/projects/2022/09/15/Redis笔记/基础/新数据类型 Bitmaps/,Hexo,,;"></a></div></div><div class="pagination"><ul class="clearfix"><li class="pre pagbuttons"><a class="btn" role="navigation" href="/shenyongqianmo/shenyongqianmo.github.io/projects/2022/09/15/Redis%E7%AC%94%E8%AE%B0/%E5%9F%BA%E7%A1%80/%E5%8F%91%E5%B8%83%E5%92%8C%E8%AE%A2%E9%98%85/" title="">Previous</a></li><li class="next pagbuttons"><a class="btn" role="navigation" href="/shenyongqianmo/shenyongqianmo.github.io/projects/2022/09/15/Redis%E7%AC%94%E8%AE%B0/%E5%9F%BA%E7%A1%80/%E5%93%88%E5%B8%8CHash/" title="">Next</a></li></ul></div><script src="/shenyongqianmo/shenyongqianmo.github.io/projects/js/visitors.js"></script></div></div></div></div><script src="/shenyongqianmo/shenyongqianmo.github.io/projects/js/jquery-migrate-1.2.1.min.js"></script><script src="/shenyongqianmo/shenyongqianmo.github.io/projects/js/jquery.appear.js"></script><script src="/shenyongqianmo/shenyongqianmo.github.io/projects/js/add-bookmark.js"></script><script>(function(window){var INSIGHT_CONFIG={TRANSLATION:{POSTS:"Posts",PAGES:"Pages",CATEGORIES:"Categories",TAGS:"Tags",UNTITLED:"(Untitled)",},CONTENT_URL:"/shenyongqianmo/shenyongqianmo.github.io/projects/content.json",};window.INSIGHT_CONFIG=INSIGHT_CONFIG})(window);</script><script src="/shenyongqianmo/shenyongqianmo.github.io/projects/js/insight.js" defer></script><div class="searchbox ins-search"><div class="searchbox-container ins-search-container"><div class="searchbox-input-wrapper"><input class="searchbox-input ins-search-input" type="text" placeholder="Search..."><span class="searchbox-close"><a class="fa fa-times-circle" onclick="closeWindow();"></a></span></div><div class="searchbox-result-wrapper ins-section-wrapper"><div class="ins-section-container"><p>Seraching...</p></div></div></div></div></body></html>
