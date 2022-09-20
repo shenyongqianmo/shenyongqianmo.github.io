@@ -622,6 +622,7 @@ pre .language {
     height: 106px;
     border-radius: 50%;
     border: #f1f1f1 3px solid;
+    background:url('../images/fromhere.png')
 }
 #home-card .card-style .avatar img {
     border-radius: 50%;
