@@ -1,0 +1,1 @@
+const a=JSON.parse('{"key":"v-1b2f8dff","path":"/advanced%20math/","title":"高等数学中所需中学的知识","lang":"zh-CN","frontmatter":{},"headers":[],"git":{"updatedTime":1682309352000,"contributors":[{"name":"shenyongqianmo","email":"shenyongqianmo@gmail.com","commits":1}]},"filePathRelative":"advanced math/index.md"}');export{a as data};

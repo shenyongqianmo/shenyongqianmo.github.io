@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="generator" content="VuePress 2.0.0-beta.61">
+    <style>
+      :root {
+        --c-bg: #fff;
+      }
+      html.dark {
+        --c-bg: #22272e;
+      }
+      html, body {
+        background-color: var(--c-bg);
+      }
+    </style>
+    <script>
+      const userMode = localStorage.getItem('vuepress-color-scheme');
+			const systemDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+			if (userMode === 'dark' || (userMode !== 'light' && systemDarkMode)) {
+				document.documentElement.classList.toggle('dark', true);
+			}
+    </script>
+    <title>Hello, VuePress!</title><meta name="description" content="This is my first VuePress site!">
+    <link rel="preload" href="/assets/style-d2355f92.css" as="style"><link rel="stylesheet" href="/assets/style-d2355f92.css">
+    <link rel="modulepreload" href="/assets/app-e034a69f.js"><link rel="modulepreload" href="/assets/framework-5866ffd3.js"><link rel="modulepreload" href="/assets/404.html-f9875e7b.js"><link rel="modulepreload" href="/assets/404.html-87d54bd8.js"><link rel="prefetch" href="/assets/index.html-6b1414fd.js" as="script"><link rel="prefetch" href="/assets/index.html-c5dd8938.js" as="script"><link rel="prefetch" href="/assets/三角函数.html-eb8f07d6.js" as="script"><link rel="prefetch" href="/assets/函数奇偶性判断.html-33e6eddf.js" as="script"><link rel="prefetch" href="/assets/index.html-a838dbc6.js" as="script"><link rel="prefetch" href="/assets/index.html-5f43d664.js" as="script"><link rel="prefetch" href="/assets/三角函数.html-bb9ed45d.js" as="script"><link rel="prefetch" href="/assets/函数奇偶性判断.html-1d939c80.js" as="script">
+  </head>
+  <body>
+    <div id="app"><!--[--><div class="theme-container"><main class="page"><div class="theme-default-content"><h1>404</h1><blockquote>Looks like we&#39;ve got some broken links.</blockquote><a href="/" class="">Take me home</a></div></main></div><!----><!--]--></div>
+    <script type="module" src="/assets/app-e034a69f.js" defer></script>
+  </body>
+</html>
